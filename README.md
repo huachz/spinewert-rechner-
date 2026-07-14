@@ -1,1 +1,0 @@
-# spinewert-rechner-
