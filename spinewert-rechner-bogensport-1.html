@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spinewert-Rechner: Der präziseste Pfeil-Konfigurator für Carbon, Aluminium & Holz</title>
+<meta name="description" content="Einzigartiger Spinewert-Rechner: berücksichtigt Bogentyp, Sehnenart, Auszugslänge, Spitzengewicht und Mindestpfeilgewicht-Sicherheit. Für Carbon-, Aluminium- und Holzpfeile.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --parchment: #F3ECDC;
+    --parchment-alt: #E9DFC7;
+    --forest: #1F3327;
+    --forest-deep: #14231A;
+    --walnut: #7A4A2B;
+    --bronze: #B5842C;
+    --bronze-soft: #F0E1BE;
+    --rust: #A2432E;
+    --rust-soft: #F1DDD4;
+    --sage: #4C6B52;
+    --line: #D8CBA8;
+    --measure: 700px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background: var(--parchment);
+    color: var(--forest-deep);
+    font-family: 'Archivo', -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', Georgia, serif;
+    color: var(--forest-deep);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5em;
+  }
+  a{ color: var(--walnut); }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--walnut);
+  }
+
+  /* topbar */
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 16px clamp(20px,5vw,64px);
+    border-bottom: 1px solid var(--line);
+    flex-wrap:wrap; gap:10px;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--forest);
+    border:1px solid var(--forest); border-radius: 3px;
+    padding: 5px 10px; background: var(--bronze-soft);
+    white-space:nowrap;
+  }
+
+  /* hero */
+  .hero{
+    padding: clamp(40px,7vw,80px) clamp(20px,5vw,64px) 34px;
+    max-width: 980px; margin:0 auto;
+  }
+  .hero h1{
+    font-size: clamp(2.1rem, 4vw, 3rem);
+    max-width: 18ch;
+    font-weight:600;
+  }
+  .hero .sub{
+    font-size: 1.15rem; color:#3E4F42; max-width:64ch; margin-top:16px;
+  }
+  .hero .cta-row{ margin-top:26px; display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family:'Archivo',sans-serif; font-weight:600; font-size:15px;
+    padding: 13px 22px; border-radius: 3px; border: 1px solid var(--forest-deep);
+    background: var(--forest-deep); color: var(--parchment);
+    cursor:pointer; text-decoration:none; display:inline-block;
+    transition: background .15s ease;
+  }
+  .btn:hover{ background:#2B4234; }
+  .btn.ghost{ background:transparent; color:var(--forest-deep); }
+  .btn.ghost:hover{ background:var(--parchment-alt); }
+
+  /* layout */
+  .layout{
+    max-width: 1180px; margin: 10px auto 0;
+    padding: 0 clamp(20px,5vw,64px) 40px;
+    display:grid; grid-template-columns: 210px minmax(0,1fr); gap:56px;
+  }
+  .toc{ position:sticky; top:20px; align-self:start; font-size:14px; }
+  .toc ol{ list-style:none; margin:0; padding:0; border-left:1px solid var(--line); }
+  .toc a{ display:block; padding:7px 0 7px 16px; color:#5A6B5D; text-decoration:none; border-left:2px solid transparent; margin-left:-1px; }
+  .toc a:hover{ color:var(--forest-deep); border-left-color: var(--bronze); }
+
+  article{ max-width: var(--measure); }
+  article section{ margin-bottom:52px; scroll-margin-top:20px; }
+  article h2{ font-size:1.5rem; font-weight:600; margin-top:0; }
+  article h2 .num{
+    font-family:'JetBrains Mono', monospace; font-size:.55em; color:var(--walnut);
+    display:block; font-weight:500; letter-spacing:.06em; margin-bottom:6px;
+  }
+  article p{ margin:0 0 16px; }
+  article p.lede{ color:#3E4F42; font-size:1.04em; }
+  article ul, article ol{ padding-left:22px; margin:0 0 16px; }
+  article li{ margin-bottom:8px; }
+
+  .callout{ border-left:4px solid var(--rust); background:var(--rust-soft); padding:16px 20px; border-radius:2px; margin:20px 0; }
+  .callout .eyebrow{ color:var(--rust); margin-bottom:6px; }
+  .note{ border:1px solid var(--line); background:#fff; padding:16px 20px; border-radius:2px; margin:20px 0; font-size:.95em; }
+  .note .eyebrow{ margin-bottom:6px; }
+
+  table.corr{ width:100%; border-collapse:collapse; margin:16px 0 24px; font-size:.92em; }
+  table.corr th, table.corr td{ text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+  table.corr th{ font-family:'JetBrains Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--walnut); }
+  table.corr td.val{ font-family:'JetBrains Mono', monospace; text-align:right; white-space:nowrap; }
+
+  /* calculator - signature element */
+  .calculator{
+    background: var(--forest-deep); color: var(--parchment);
+    border-radius:5px; padding: 32px clamp(20px,4vw,40px); margin: 22px 0 30px;
+    position:relative; overflow:hidden;
+  }
+  .calculator::before{
+    content:""; position:absolute; right:-40px; top:-40px; width:220px; height:220px;
+    border:1px solid rgba(243,236,220,0.08); border-radius:50%;
+  }
+  .calculator::after{
+    content:""; position:absolute; right:10px; top:10px; width:140px; height:140px;
+    border:1px solid rgba(243,236,220,0.08); border-radius:50%;
+  }
+  .calculator .eyebrow{ color:#C7B98A; margin-bottom:6px; }
+  .calculator h3{ color:#fff; font-size:1.35rem; margin-bottom:6px; }
+  .calculator .intro{ color:#CBD4C9; font-size:.94em; max-width:60ch; margin-bottom:26px; }
+
+  .calc-tabs{ display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+  .calc-tab{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.03em;
+    padding:8px 14px; border-radius:20px; border:1px solid #3D5443; background:transparent;
+    color:#CBD4C9; cursor:pointer;
+  }
+  .calc-tab.active{ background: var(--bronze); border-color:var(--bronze); color:#1F1704; font-weight:600; }
+
+  .calc-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px; }
+  @media (max-width:560px){ .calc-grid{ grid-template-columns:1fr; } }
+  .field label{
+    display:block; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em;
+    color:#B7C4B8; margin-bottom:7px; text-transform:uppercase;
+  }
+  .field .hint{ font-size:11px; color:#8AA08D; margin-top:5px; font-family:'Archivo',sans-serif; text-transform:none; letter-spacing:0; }
+  .field input, .field select{
+    width:100%; background:#28402F; border:1px solid #3D5443; color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:16px; padding:11px 12px; border-radius:3px;
+  }
+  .field select{ font-family:'Archivo',sans-serif; font-size:14.5px; }
+  .field input:focus, .field select:focus{ outline:2px solid var(--bronze); outline-offset:1px; }
+
+  .calc-check{ display:flex; align-items:center; gap:9px; font-size:14px; color:#CBD4C9; margin: 4px 0 22px; cursor:pointer; }
+
+  .calc-result{ background:#28402F; border-radius:4px; padding:22px 24px; border-left:4px solid #4C6B52; }
+  .calc-result .verdict{ font-family:'Fraunces',serif; font-size:1.3rem; margin-bottom:10px; color:#fff; }
+  .result-row{ display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-top:1px solid #3D5443; font-size:.95em; }
+  .result-row:first-of-type{ border-top:none; }
+  .result-row .rl{ color:#B7C4B8; }
+  .result-row .rv{ font-family:'JetBrains Mono',monospace; font-weight:600; color:#F0E1BE; font-size:1.05em; }
+
+  .gpp-bar{ margin-top:16px; }
+  .gpp-track{ height:8px; background:#3D5443; border-radius:4px; overflow:hidden; margin-top:6px; }
+  .gpp-fill{ height:100%; background: var(--sage); border-radius:4px; transition: width .25s ease, background .25s ease; }
+  .gpp-fill.warn{ background: var(--rust); }
+  .gpp-label{ font-size:12px; color:#B7C4B8; display:flex; justify-content:space-between; }
+
+  .calc-warning{ margin-top:14px; background: rgba(162,67,46,0.18); border:1px solid var(--rust); color:#F1DDD4; padding:11px 14px; border-radius:3px; font-size:.88em; display:none; }
+  .calc-warning.show{ display:block; }
+
+  .calc-disclaimer{ font-size:12.5px; color:#8AA08D; margin-top:18px; }
+
+  /* material cards */
+  .material-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin: 20px 0 10px; }
+  @media (max-width:640px){ .material-grid{ grid-template-columns:1fr; } }
+  .material-card{ border:1px solid var(--line); background:#fff; border-radius:4px; padding:18px 18px; }
+  .material-card .eyebrow{ margin-bottom:8px; }
+  .material-card p{ font-size:.92em; margin-bottom:0; }
+
+  /* faq */
+  .faq details{ border-top:1px solid var(--line); padding:16px 0; }
+  .faq details:last-child{ border-bottom:1px solid var(--line); }
+  .faq summary{ cursor:pointer; font-weight:600; font-size:1.02em; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; font-family:'JetBrains Mono',monospace; font-size:20px; color:var(--bronze); flex-shrink:0; }
+  .faq details[open] summary::after{ content:"–"; }
+  .faq .a{ margin-top:10px; color:#3E4F42; }
+
+  footer{ border-top:1px solid var(--line); padding:32px clamp(20px,5vw,64px) 50px; max-width:1180px; margin:0 auto; }
+  footer .foot-grid{ display:grid; grid-template-columns:2fr 1fr; gap:28px; }
+  @media (max-width:700px){ footer .foot-grid{ grid-template-columns:1fr; } }
+  footer p{ font-size:13.5px; color:#6B7A6E; line-height:1.6; margin:0 0 10px; }
+  footer .sources a{ color:#5A6B5D; }
+
+  @media (max-width:880px){
+    .layout{ grid-template-columns:1fr; }
+    .toc{ position:static; margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:20px; }
+    .toc ol{ columns:2; border-left:none; }
+    .toc a{ border-left:none; padding-left:0; }
+  }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="eyebrow">Ausrüstung · Pfeilabstimmung</span>
+  <span class="badge">Berücksichtigt 7 Einflussfaktoren gleichzeitig</span>
+</div>
+
+<section class="hero">
+  <span class="eyebrow" style="display:block; margin-bottom:14px;">Für Bogensportler, die es genau wissen wollen</span>
+  <h1>Der Spinewert-Rechner, der alle Faktoren gleichzeitig mitdenkt</h1>
+  <p class="sub">Die meisten Rechner im Netz fragen nur Zuggewicht und Pfeillänge ab. Dieser hier bezieht zusätzlich Bogentyp, Sehnenart, Strangzahl, Köcher, Spitzengewicht <strong>und</strong> deine tatsächliche Auszugslänge mit ein — und warnt dich, wenn dein Pfeil zu leicht für deinen Bogen ist.</p>
+  <div class="cta-row">
+    <a href="#rechner" class="btn">Zum Rechner</a>
+    <a href="#faktoren" class="btn ghost">Wie die Berechnung funktioniert</a>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="toc" aria-label="Inhaltsverzeichnis">
+    <div class="eyebrow" style="margin-bottom:12px;">Inhalt</div>
+    <ol>
+      <li><a href="#rechner">Rechner</a></li>
+      <li><a href="#faktoren">Wie er rechnet</a></li>
+      <li><a href="#material">Carbon, Alu, Holz</a></li>
+      <li><a href="#hersteller">Herstellertabellen</a></li>
+      <li><a href="#test">Der Praxistest</a></li>
+      <li><a href="#faq">Häufige Fragen</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="rechner">
+      <h2><span class="num">Rechner</span>Finde deinen Spinewert</h2>
+      <p class="lede">Trage deine Werte ein. Für Recurve, Langbogen und Selfbow rechnet das Tool nach der klassischen Additionsmethode; für Compound bekommst du eine grobe Orientierung plus den Hinweis, wann du zwingend die IBO-Tabelle des Herstellers brauchst.</p>
+
+      <div class="calculator" id="rechner-box">
+        <span class="eyebrow">Interaktiver Rechner</span>
+        <h3>Spinewert-Rechner</h3>
+        <p class="intro">Miss dein Zuggewicht wenn möglich mit einer Bogenwaage am tatsächlichen Ankerpunkt — die Angabe auf dem Bogen gilt nur für 28″ Auszug.</p>
+
+        <div class="calc-tabs" role="tablist" aria-label="Bogentyp-Kategorie">
+          <button class="calc-tab active" data-mode="trad">Traditionell / Recurve</button>
+          <button class="calc-tab" data-mode="compound">Compound</button>
+        </div>
+
+        <!-- TRADITIONAL MODE -->
+        <div id="mode-trad">
+          <div class="calc-grid">
+            <div class="field">
+              <label for="bogentyp">Bogentyp</label>
+              <select id="bogentyp">
+                <option value="0">Traditioneller Langbogen (englisch, gerade)</option>
+                <option value="5">Moderner Hybrid-/Reflex-Deflex-Langbogen</option>
+                <option value="7.5">Recurvebogen</option>
+                <option value="-6.5">Reiterbogen / Selfbow</option>
+              </select>
+              <div class="hint">Bodnik-, Selfbow- und Horsebow-Modelle meist "Reiterbogen/Selfbow", moderne Hybride entsprechend "Hybrid-/Reflex-Deflex".</div>
+            </div>
+            <div class="field">
+              <label for="bogengewicht">Bogenangabe bei 28″ (lbs)</label>
+              <input type="number" id="bogengewicht" placeholder="z. B. 40" min="0" step="0.5">
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <div class="field">
+              <label for="auszug">Deine Auszugslänge (Zoll)</label>
+              <input type="number" id="auszug" placeholder="z. B. 27" min="0" step="0.25">
+              <div class="hint">≈ 2,5 lbs pro Zoll Abweichung von 28″ werden automatisch verrechnet.</div>
+            </div>
+            <div class="field">
+              <label for="pfeillaenge">Pfeillänge (Zoll)</label>
+              <input type="number" id="pfeillaenge" placeholder="z. B. 28" min="0" step="0.25">
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <div class="field">
+              <label for="spitze">Spitzengewicht (grain)</label>
+              <input type="number" id="spitze" placeholder="z. B. 125" min="0" step="1">
+            </div>
+            <div class="field">
+              <label for="sehne">Sehnenart</label>
+              <select id="sehne">
+                <option value="0">Dacron, 10–16 Stränge (Standard)</option>
+                <option value="5">Dacron, unter 10 Stränge</option>
+                <option value="-5">Dacron, über 16 Stränge</option>
+                <option value="7.5">FastFlight / Dyneema</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <div class="field">
+              <label for="material">Wunschmaterial für die Anzeige</label>
+              <select id="material">
+                <option value="carbon">Carbon</option>
+                <option value="aluminium">Aluminium</option>
+                <option value="holz">Holz</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pfeilgewicht">Pfeil-Gesamtgewicht (grain, optional)</label>
+              <input type="number" id="pfeilgewicht" placeholder="für Sicherheitscheck" min="0" step="1">
+              <div class="hint">Aktiviert die Mindestpfeilgewicht-Prüfung (GPP-Check).</div>
+            </div>
+          </div>
+
+          <label class="calc-check">
+            <input type="checkbox" id="koecher">
+            Seitenköcher am Bogen montiert
+          </label>
+        </div>
+
+        <!-- COMPOUND MODE -->
+        <div id="mode-compound" style="display:none;">
+          <div class="calc-grid">
+            <div class="field">
+              <label for="c-zuggewicht">Spitzengewicht Zuggewicht (lbs)</label>
+              <input type="number" id="c-zuggewicht" placeholder="z. B. 55" min="0" step="0.5">
+            </div>
+            <div class="field">
+              <label for="c-letoff">Let-off (%)</label>
+              <input type="number" id="c-letoff" placeholder="z. B. 80" min="0" max="95" step="1">
+            </div>
+          </div>
+          <div class="calc-grid">
+            <div class="field">
+              <label for="c-pfeillaenge">Pfeillänge (Zoll)</label>
+              <input type="number" id="c-pfeillaenge" placeholder="z. B. 28" min="0" step="0.25">
+            </div>
+            <div class="field">
+              <label for="c-spitze">Spitzengewicht (grain)</label>
+              <input type="number" id="c-spitze" placeholder="z. B. 100" min="0" step="1">
+            </div>
+          </div>
+          <div class="calc-grid">
+            <div class="field">
+              <label for="c-material">Wunschmaterial für die Anzeige</label>
+              <select id="c-material">
+                <option value="carbon">Carbon</option>
+                <option value="aluminium">Aluminium</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="c-pfeilgewicht">Pfeil-Gesamtgewicht (grain, optional)</label>
+              <input type="number" id="c-pfeilgewicht" placeholder="für Sicherheitscheck" min="0" step="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-result" id="calc-result">
+          <div class="verdict" id="calc-verdict">Werte eingeben, um deine Empfehlung zu sehen.</div>
+          <div class="result-row"><span class="rl">Holzspine (rechnerisch)</span><span class="rv" id="r-holz">–</span></div>
+          <div class="result-row"><span class="rl">Carbon-Spine (AMO)</span><span class="rv" id="r-carbon">–</span></div>
+          <div class="result-row"><span class="rl">Aluminium (Richtwert)</span><span class="rv" id="r-alu">–</span></div>
+
+          <div class="gpp-bar" id="gpp-bar" style="display:none;">
+            <div class="gpp-label"><span>Mindestpfeilgewicht-Check (GPP)</span><span id="gpp-value">–</span></div>
+            <div class="gpp-track"><div class="gpp-fill" id="gpp-fill" style="width:0%;"></div></div>
+          </div>
+          <div class="calc-warning" id="calc-warning"></div>
+        </div>
+
+        <p class="calc-disclaimer">Näherungswerte nach der klassischen Additionsmethode der traditionellen Bogensport-Community. Ersetzt keinen Rohschaft- oder Papiertest. Bei Jagd- oder Wettkampfeinsatz zusätzlich Herstellertabelle und lokale Vorschriften prüfen.</p>
+      </div>
+    </section>
+
+    <section id="faktoren">
+      <h2><span class="num">Methodik</span>Wie die Berechnung funktioniert</h2>
+      <p class="lede">Grundlage ist die klassische Additionsmethode: Ausgehend vom Referenz-Setup (traditioneller Langbogen, Dacronsehne, 125-grain-Spitze, 28″ Pfeil) entspricht der benötigte Holzspine genau dem Zuggewicht auf den Fingern. Jede Abweichung von diesem Referenz-Setup wird als Korrekturwert addiert oder subtrahiert.</p>
+
+      <table class="corr">
+        <tr><th>Faktor</th><th>Korrektur</th></tr>
+        <tr><td>Recurvebogen statt Langbogen</td><td class="val">+7,5 lbs</td></tr>
+        <tr><td>Moderner Hybrid-/Reflex-Deflex-Langbogen</td><td class="val">+5 lbs</td></tr>
+        <tr><td>Reiterbogen / Selfbow</td><td class="val">−6,5 lbs</td></tr>
+        <tr><td>FastFlight/Dyneema statt Dacron</td><td class="val">+7,5 lbs</td></tr>
+        <tr><td>Sehnenstärke unter 10 Strang</td><td class="val">+5 lbs</td></tr>
+        <tr><td>Sehnenstärke über 16 Strang</td><td class="val">−5 lbs</td></tr>
+        <tr><td>Spitzengewicht, je 25 grain schwerer/leichter als 125 gr</td><td class="val">±4 lbs</td></tr>
+        <tr><td>Pfeillänge, je Zoll länger/kürzer als 28″</td><td class="val">±5 lbs</td></tr>
+        <tr><td>Seitenköcher montiert</td><td class="val">+5 lbs</td></tr>
+        <tr><td>Auszugslänge, je Zoll abweichend von 28″ (Bogenkraft)</td><td class="val">±2,5 lbs</td></tr>
+      </table>
+
+      <p>Der letzte Punkt wird von den meisten frei verfügbaren Rechnern übersehen: Ein Bogen, der mit „40 lbs" ausgezeichnet ist, liefert diese Kraft nur bei genau 28″ Auszug. Ziehst du weiter oder kürzer, verändert sich das tatsächliche Zuggewicht auf deinen Fingern spürbar — bei 2″ mehr Auszug können das schon 5 lbs mehr sein. Dieser Rechner verrechnet das automatisch, bevor er die restlichen Korrekturen anwendet.</p>
+
+      <div class="note">
+        <div class="eyebrow">Formel Holz → Carbon</div>
+        Carbon-Spine (AMO) = (26.000 ÷ Holzspine) ÷ 0,825. Ein Holzspine von 40 lbs entspricht damit rechnerisch einem Carbon-Spine von rund 788 — praktisch wird meist auf die nächste verfügbare Herstellergruppe (z. B. 700 oder 800) gerundet.
+      </div>
+    </section>
+
+    <section id="material">
+      <h2><span class="num">Material</span>Carbon, Aluminium oder Holz?</h2>
+      <p class="lede">Der rechnerische Grundwert ist bei allen drei Materialien identisch — nur die Skala, auf der er abgelesen wird, unterscheidet sich.</p>
+      <div class="material-grid">
+        <div class="material-card">
+          <div class="eyebrow">Carbon</div>
+          <p>Skala meist 300–900. Niedrige Zahl = steif. Bei den meisten Herstellern (Gold Tip, Easton) identisch skaliert — Ausnahme z. B. Carbon Express mit eigenem, umgekehrtem System. Im Zweifel den Easton-äquivalenten Wert beim Händler erfragen.</p>
+        </div>
+        <div class="material-card">
+          <div class="eyebrow">Aluminium</div>
+          <p>Angabe als vierstelliger Code, z. B. 1816: erste zwei Ziffern = Außendurchmesser in 64stel Zoll, letzte zwei = Wandstärke in tausendstel Zoll. Dieser Rechner gibt nur eine grobe Familien-Orientierung — exakte Wandstärken variieren je Hersteller.</p>
+        </div>
+        <div class="material-card">
+          <div class="eyebrow">Holz</div>
+          <p>Wird direkt in lbs-Gruppen verkauft (z. B. „40–45#"). Der Holzspine-Wert dieses Rechners ist bei Holzschäften direkt die Kaufgröße — allerdings streuen Naturschäfte stärker, ein Rohschafttest ist hier besonders wichtig.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="hersteller">
+      <h2><span class="num">Abgleich</span>Herstellertabellen zur Gegenprüfung</h2>
+      <p class="lede">Dieser Rechner ersetzt keine Herstellertabelle, sondern gibt dir einen fundierten Startwert, mit dem du gezielter in die passende Tabelle schaust.</p>
+      <ul>
+        <li><strong>Gold Tip:</strong> führt getrennte Tabellen für Recurve/Traditionell sowie für Compound nach IBO-Geschwindigkeit (unter/über ca. 315 fps) — wichtig, weil ein und derselbe Schaft je nach Bogenklasse unterschiedlich empfohlen wird.</li>
+        <li><strong>Easton:</strong> stellt Target- und Hunting-Auswahltabellen als PDF bereit; nützlich als zweite Referenz, gerade wenn dein berechneter Wert genau zwischen zwei Gruppen liegt.</li>
+        <li><strong>Traditionelle Hersteller (z. B. Bodnik Bows):</strong> geben selten Spitzengewichts-Differenzierungen an. Hier ist der Rohschafttest die zuverlässigste Methode — nutze den berechneten Wert dieses Rechners als Ausgangspunkt für die erste Bestellung von Testschäften.</li>
+      </ul>
+      <div class="callout">
+        <div class="eyebrow">Wichtig</div>
+        Liegt dein berechneter Wert zwischen zwei Herstellergruppen, gilt bei Fingerschützen die Faustregel: im Zweifel die steifere (niedrigere) Gruppe wählen. Bei Compoundbögen mit Release gilt dasselbe noch strenger.
+      </div>
+    </section>
+
+    <section id="test">
+      <h2><span class="num">Validierung</span>Der Praxistest bleibt Pflicht</h2>
+      <p class="lede">Jeder Rechner — auch dieser — liefert nur eine Näherung des dynamischen Spinewerts. Gemessen werden kann nur der statische Wert am Schaft.</p>
+      <ol>
+        <li><strong>Blankschafttest:</strong> Ein unbefiederter Pfeil wird neben 2–3 identischen, befiederten Pfeilen auf 10–15 m geschossen. Fliegt er auffällig seitlich ab, ist die Gruppierung ein verlässlicher Hinweis auf zu steif oder zu weich.</li>
+        <li><strong>Papiertest:</strong> Ein Schuss durch straff gespanntes Papier zeigt anhand des Risses, ob und wie stark der Pfeil beim Verlassen des Bogens noch schwingt.</li>
+        <li><strong>Iterieren:</strong> Spitzengewicht in kleinen Schritten anpassen ist oft der schnellste Weg zum Feintuning, ohne gleich neue Schäfte zu kaufen — solange der GPP-Mindestwert dabei nicht unterschritten wird.</li>
+      </ol>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2><span class="num">FAQ</span>Häufige Fragen</h2>
+      <details>
+        <summary>Warum warnt der Rechner vor zu leichten Pfeilen?</summary>
+        <div class="a">Ein Pfeil, der deutlich unter etwa 5 grain pro Pfund Zuggewicht (GPP) liegt, nimmt beim Schuss zu wenig Energie auf. Die überschüssige Energie muss der Bogen selbst absorbieren — das erhöht messbar das Risiko von Materialschäden bis hin zum Bruch von Wurfarmen, besonders bei traditionellen Holz- oder Hybridbögen.</div>
+      </details>
+      <details>
+        <summary>Mein berechneter Wert liegt genau zwischen zwei Herstellergruppen — was jetzt?</summary>
+        <div class="a">Bestelle testweise beide angrenzenden Gruppen als Rohschäfte, falls möglich, und entscheide per Blankschafttest. Ist das nicht praktikabel, wähle bei Fingerschützen die steifere (niedrigere) Gruppe.</div>
+      </details>
+      <details>
+        <summary>Gilt die Auszugslängen-Korrektur auch für Compoundbögen?</summary>
+        <div class="a">Nein. Bei Compoundbögen bestimmt die Cam-Einstellung die Auszugslänge fix, das Zuggewicht bleibt über weite Teile des Zugwegs durch den Let-off nahezu konstant. Hier ist die IBO-Geschwindigkeitstabelle des Herstellers die zuverlässigere Quelle als eine lbs-Korrektur.</div>
+      </details>
+      <details>
+        <summary>Warum unterscheiden sich Carbon-Spine-Angaben zwischen Herstellern?</summary>
+        <div class="a">Die meisten Hersteller (Gold Tip, Easton) nutzen dieselbe Grundskala, bei der die Zahl der Durchbiegung in tausendstel Zoll entspricht. Einzelne Hersteller wie Carbon Express verwenden ein eigenes, teils umgekehrtes Nummernsystem — im Zweifel immer den Easton-äquivalenten Wert erfragen.</div>
+      </details>
+    </section>
+
+  </article>
+</div>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <p><strong style="color:#3E4F42;">Hinweis:</strong> Dieser Rechner liefert eine rechnerische Näherung auf Basis allgemein anerkannter Faustformeln der Bogensport-Community. Er ersetzt keine physische Prüfung durch Blankschaft- oder Papiertest und keine Sicherheitsprüfung durch Fachpersonal. Falsche Pfeilwahl kann zu Materialschäden und Verletzungen führen.</p>
+      <p>Alle Marken- und Herstellernamen dienen ausschließlich der Einordnung und sind Eigentum der jeweiligen Rechteinhaber.</p>
+    </div>
+    <div class="sources">
+      <p><strong style="color:#3E4F42;">Methodische Grundlage</strong></p>
+      <p>Additionsmethode der traditionellen Bogensport-Community<br>AMO/ATA-Spine-Standard<br>Easton- und Gold-Tip-Herstellerdokumentation (Cross-Check)</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.calc-tab');
+  const modeTrad = document.getElementById('mode-trad');
+  const modeCompound = document.getElementById('mode-compound');
+  let currentMode = 'trad';
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentMode = tab.dataset.mode;
+      modeTrad.style.display = currentMode === 'trad' ? 'block' : 'none';
+      modeCompound.style.display = currentMode === 'compound' ? 'block' : 'none';
+      evaluate();
+    });
+  });
+
+  const verdict = document.getElementById('calc-verdict');
+  const rHolz = document.getElementById('r-holz');
+  const rCarbon = document.getElementById('r-carbon');
+  const rAlu = document.getElementById('r-alu');
+  const gppBar = document.getElementById('gpp-bar');
+  const gppFill = document.getElementById('gpp-fill');
+  const gppValue = document.getElementById('gpp-value');
+  const warningBox = document.getElementById('calc-warning');
+
+  function num(id){
+    const el = document.getElementById(id);
+    const v = parseFloat(el.value);
+    return isNaN(v) ? null : v;
+  }
+
+  function alumFamily(holz){
+    if (holz < 30) return '1516 – 1616';
+    if (holz < 35) return '1616 – 1716';
+    if (holz < 40) return '1716 – 1816';
+    if (holz < 45) return '1816 – 1916';
+    if (holz < 50) return '1916 – 2016';
+    if (holz < 55) return '2016 – 2117';
+    if (holz < 60) return '2117 – 2213';
+    return '2213 – 2312+';
+  }
+
+  function roundTo(v, step){ return Math.round(v/step)*step; }
+
+  function evaluate(){
+    let holz = null;
+    let zuggewichtFinger = null;
+
+    if (currentMode === 'trad'){
+      const bogentyp = parseFloat(document.getElementById('bogentyp').value);
+      const bogengewicht = num('bogengewicht');
+      const auszug = num('auszug');
+      const pfeillaenge = num('pfeillaenge');
+      const spitze = num('spitze');
+      const sehne = parseFloat(document.getElementById('sehne').value);
+      const koecher = document.getElementById('koecher').checked;
+
+      if (bogengewicht === null || pfeillaenge === null){
+        resetResult();
+        return;
+      }
+
+      // tatsächliches Zuggewicht auf den Fingern (Auszugslängen-Korrektur)
+      zuggewichtFinger = bogengewicht;
+      if (auszug !== null){
+        zuggewichtFinger = bogengewicht + (auszug - 28) * 2.5;
+      }
+
+      let sum = zuggewichtFinger;
+      sum += bogentyp;
+      sum += sehne;
+      if (koecher) sum += 5;
+      if (spitze !== null) sum += (spitze - 125) * (4/25);
+      sum += (pfeillaenge - 28) * 5;
+
+      holz = sum;
+    } else {
+      const czug = num('c-zuggewicht');
+      const cletoff = num('c-letoff');
+      const cpfeillaenge = num('c-pfeillaenge');
+      const cspitze = num('c-spitze');
+
+      if (czug === null || cpfeillaenge === null){
+        resetResult();
+        return;
+      }
+
+      // grobe Compound-Näherung: Peak-Gewicht + energetischer Aufschlag,
+      // leicht abgeschwächt durch hohen Let-off (mehr Let-off = etwas weniger Aufschlag nötig)
+      const letoffFactor = cletoff !== null ? (1 - (cletoff - 65) * 0.004) : 1;
+      let sum = czug * 1.35 * letoffFactor;
+      if (cspitze !== null) sum += (cspitze - 100) * (4/25);
+      sum += (cpfeillaenge - 28) * 5;
+
+      holz = sum;
+    }
+
+    if (holz === null || holz <= 0){
+      resetResult();
+      return;
+    }
+
+    const holzRounded = roundTo(holz, 1);
+    const carbon = (26000 / holz) / 0.825;
+    const carbonRounded = roundTo(carbon, 10);
+
+    rHolz.textContent = holzRounded.toFixed(0) + ' # (lbs)';
+    rCarbon.textContent = '≈ .' + carbonRounded.toFixed(0);
+    rAlu.textContent = alumFamily(holz) + ' (Richtwert)';
+
+    if (currentMode === 'trad'){
+      verdict.textContent = 'Rechnerischer Spinewert: ' + holzRounded.toFixed(0) + ' lbs Holzspine-Äquivalent';
+    } else {
+      verdict.textContent = 'Grobe Compound-Näherung — IBO-Tabelle zur Bestätigung nutzen';
+    }
+
+    // GPP-Sicherheitscheck
+    const pfeilgewichtId = currentMode === 'trad' ? 'pfeilgewicht' : 'c-pfeilgewicht';
+    const pfeilgewicht = num(pfeilgewichtId);
+    const referenzZug = currentMode === 'trad' ? (zuggewichtFinger || holz) : num('c-zuggewicht');
+
+    if (pfeilgewicht !== null && referenzZug){
+      const gpp = pfeilgewicht / referenzZug;
+      gppBar.style.display = 'block';
+      gppValue.textContent = gpp.toFixed(1) + ' GPP';
+      const pct = Math.min(100, (gpp / 10) * 100);
+      gppFill.style.width = pct + '%';
+      if (gpp < 5){
+        gppFill.classList.add('warn');
+        warningBox.textContent = 'Achtung: Dein Pfeil liegt unter 5 grain/lb. Das erhöhte Risiko für Bogenschäden bei zu leichten Pfeilen — erhöhe Spitzengewicht oder Schaftgewicht.';
+        warningBox.classList.add('show');
+      } else {
+        gppFill.classList.remove('warn');
+        warningBox.classList.remove('show');
+      }
+    } else {
+      gppBar.style.display = 'none';
+      warningBox.classList.remove('show');
+    }
+  }
+
+  function resetResult(){
+    verdict.textContent = 'Werte eingeben, um deine Empfehlung zu sehen.';
+    rHolz.textContent = '–';
+    rCarbon.textContent = '–';
+    rAlu.textContent = '–';
+    gppBar.style.display = 'none';
+    warningBox.classList.remove('show');
+  }
+
+  const allInputs = document.querySelectorAll('#rechner-box input, #rechner-box select');
+  allInputs.forEach(el => {
+    el.addEventListener('input', evaluate);
+    el.addEventListener('change', evaluate);
+  });
+})();
+</script>
+
+</body>
+</html>
